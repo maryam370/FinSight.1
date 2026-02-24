@@ -1,7 +1,9 @@
 package com.example.FinSight.dto;
 
-import lombok.Data;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import lombok.Data;
 
 @Data
 public class TransactionRequest {
@@ -11,4 +13,5 @@ public class TransactionRequest {
     private String category;
     private String description;
     private String location;
+    private LocalDateTime transactionDate;
 }
