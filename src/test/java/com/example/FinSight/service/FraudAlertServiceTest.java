@@ -36,8 +36,6 @@ class FraudAlertServiceTest {
     @Mock
     private UserRepository userRepository;
     
-    @Mock
-    private AuditLogService auditLogService;
     
     @InjectMocks
     private FraudAlertService fraudAlertService;
@@ -284,15 +282,7 @@ class FraudAlertServiceTest {
         ArgumentCaptor<FraudAlert> alertCaptor = ArgumentCaptor.forClass(FraudAlert.class);
         verify(fraudAlertRepository).save(alertCaptor.capture());
         assertThat(alertCaptor.getValue().isResolved()).isTrue();
-        
-        // Verify audit log was created
-        verify(auditLogService).logAction(
-            eq(1L),
-            eq("RESOLVE_FRAUD_ALERT"),
-            eq("FRAUD_ALERT"),
-            eq(1L),
-            eq("{\"alertId\": 1, \"severity\": \"HIGH\"}")
-        );
+ 
     }
     
     @Test
@@ -321,13 +311,6 @@ class FraudAlertServiceTest {
         // Assert
         assertThat(result.isResolved()).isTrue();
         verify(fraudAlertRepository).save(any(FraudAlert.class));
-        verify(auditLogService).logAction(
-            eq(1L),
-            eq("RESOLVE_FRAUD_ALERT"),
-            eq("FRAUD_ALERT"),
-            eq(1L),
-            eq("{\"alertId\": 1, \"severity\": \"MEDIUM\"}")
-        );
     }
     
     @Test
@@ -381,15 +364,6 @@ class FraudAlertServiceTest {
         
         // Act
         fraudAlertService.resolveAlert(1L);
-        
-        // Assert
-        verify(auditLogService).logAction(
-            eq(1L),
-            eq("RESOLVE_FRAUD_ALERT"),
-            eq("FRAUD_ALERT"),
-            eq(1L),
-            eq("{\"alertId\": 1, \"severity\": \"LOW\"}")
-        );
     }
     
     // Helper method to create FraudAlert test objects

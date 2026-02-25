@@ -24,7 +24,7 @@ public class FraudAlertService {
     
     private final FraudAlertRepository fraudAlertRepository;
     private final UserRepository userRepository;
-    private final AuditLogService auditLogService;
+
     
     /**
      * Finds all fraud alerts for a user ordered by creation date descending.
@@ -100,7 +100,6 @@ public class FraudAlertService {
     
     /**
      * Resolves a fraud alert by setting the resolved flag to true.
-     * Logs the resolution action via AuditLogService.
      * 
      * @param alertId The fraud alert ID
      * @return The updated fraud alert DTO
@@ -113,14 +112,6 @@ public class FraudAlertService {
         alert.setResolved(true);
         FraudAlert savedAlert = fraudAlertRepository.save(alert);
         
-        // Log the resolution action
-        auditLogService.logAction(
-            alert.getUser().getId(),
-            "RESOLVE_FRAUD_ALERT",
-            "FRAUD_ALERT",
-            alertId,
-            String.format("{\"alertId\": %d, \"severity\": \"%s\"}", alertId, alert.getSeverity())
-        );
         
         log.info("Fraud alert {} resolved for user {}", alertId, alert.getUser().getId());
         

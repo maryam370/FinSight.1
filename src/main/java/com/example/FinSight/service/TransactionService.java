@@ -29,7 +29,7 @@ public class TransactionService {
     private final UserRepository userRepository;
     private final FraudAlertRepository fraudAlertRepository;
     private final FraudDetectionService fraudDetectionService;
-    private final AuditLogService auditLogService;
+
     
     @Transactional
     public TransactionResponse createTransaction(TransactionRequest request) {
@@ -64,17 +64,7 @@ public class TransactionService {
             alert.setCreatedAt(LocalDateTime.now());
             fraudAlertRepository.save(alert);
         }
-        
-        // Log transaction creation
-        auditLogService.logAction(
-            user.getId(),
-            "CREATE_TRANSACTION",
-            "TRANSACTION",
-            saved.getId(),
-            String.format("{\"amount\": %s, \"type\": \"%s\", \"category\": \"%s\", \"fraudulent\": %b}",
-                saved.getAmount(), saved.getType(), saved.getCategory(), saved.isFraudulent())
-        );
-        
+
         return mapToResponse(saved, result);
     }
     

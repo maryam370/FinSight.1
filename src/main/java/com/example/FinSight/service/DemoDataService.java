@@ -25,7 +25,6 @@ public class DemoDataService {
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
     private final FraudDetectionService fraudDetectionService;
-    private final AuditLogService auditLogService;
     
     /**
      * Seeds demo transactions for a user if they have zero transactions.
@@ -59,9 +58,7 @@ public class DemoDataService {
         }
         
         transactionRepository.saveAll(demoTransactions);
-        
-        auditLogService.logAction(userId, "SEED_DEMO_DATA", "TRANSACTION", 
-            null, String.format("{\"count\": %d}", demoTransactions.size()));
+    
         
         log.info("Generated {} demo transactions for user {}", demoTransactions.size(), userId);
         

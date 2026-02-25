@@ -40,10 +40,7 @@ class DemoDataServiceTest {
     
     @Mock
     private FraudDetectionService fraudDetectionService;
-    
-    @Mock
-    private AuditLogService auditLogService;
-    
+        
     @InjectMocks
     private DemoDataService demoDataService;
     
@@ -81,9 +78,7 @@ class DemoDataServiceTest {
         // Verify fraud detection was called for each transaction
         verify(fraudDetectionService, times(count)).analyzeTransaction(any(Transaction.class));
         
-        // Verify audit log was created
-        verify(auditLogService).logAction(eq(1L), eq("SEED_DEMO_DATA"), eq("TRANSACTION"), 
-            eq(null), any(String.class));
+
     }
     
     @Test
@@ -100,7 +95,6 @@ class DemoDataServiceTest {
         assertThat(count).isEqualTo(0);
         verify(transactionRepository, never()).saveAll(any());
         verify(fraudDetectionService, never()).analyzeTransaction(any());
-        verify(auditLogService, never()).logAction(anyLong(), any(), any(), any(), any());
     }
     
     @Test
