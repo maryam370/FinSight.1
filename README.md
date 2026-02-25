@@ -363,6 +363,7 @@ services:
 - [ER Diagram](docs/ER-Diagram.md)
 - [SDLC Process](docs/SDLC.md)
 - [Test Cases](docs/TestCase.md)
+- [API Data Types Reference](docs/API_DATA_TYPES.md) - Frontend-Backend type mappings
 
 ## 🤝 Contributing
 

@@ -53,6 +53,45 @@ summary.totalExpenses    // NOT summary.totalExpense
 summary.currentBalance   // NOT summary.balance
 ```
 
+### Add Transaction: 400 Bad Request
+
+**Problem**: Backend expects specific data types and date format.
+
+**Backend expects** (`TransactionRequest.java`):
+- `userId`: Long (number)
+- `amount`: BigDecimal (number, not string)
+- `type`: String ("INCOME" or "EXPENSE")
+- `category`: String
+- `description`: String
+- `location`: String
+- `transactionDate`: LocalDateTime (ISO 8601 format with time: "2026-02-25T12:00:00")
+
+**Frontend must send**:
+```javascript
+{
+  userId: 1,                              // number
+  amount: 100.50,                         // number, not "100.50"
+  type: "EXPENSE",                        // string
+  category: "groceries",                  // string
+  description: "Weekly shopping",         // string
+  location: "New York",                   // string
+  transactionDate: "2026-02-25T12:00:00"  // ISO 8601 with time
+}
+```
+
+**Solution**: ✅ FIXED - Convert types before sending:
+```javascript
+const payload = {
+  userId: formData.userId,
+  amount: parseFloat(formData.amount),           // Convert to number
+  type: formData.type,
+  category: formData.category,
+  description: formData.description,
+  location: formData.location,
+  transactionDate: formData.transactionDate + 'T12:00:00'  // Add time
+}
+```
+
 ### Null/Undefined Values
 
 **Problem**: Dashboard crashes when values are null or undefined.
@@ -202,6 +241,37 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 @RequestMapping("/api/dashboard")
 public class DashboardController {
     @GetMapping("/summary")  // Full path: /api/dashboard/summary
+}
+```
+
+### 400 Bad Request / 422 Unprocessable Entity
+
+**Problem**: Request payload doesn't match backend expectations.
+
+**Common causes**:
+1. Wrong data types (string instead of number)
+2. Missing required fields
+3. Wrong date format
+4. Invalid enum values
+
+**Debug steps**:
+1. Check browser Network tab → Request Payload
+2. Compare with backend DTO requirements
+3. Check backend logs for validation errors
+4. Verify field names match exactly (case-sensitive)
+
+**Example - Transaction creation**:
+```javascript
+// ❌ Wrong
+{
+  amount: "100.50",                    // String instead of number
+  transactionDate: "2026-02-25"        // Missing time component
+}
+
+// ✅ Correct
+{
+  amount: 100.50,                      // Number
+  transactionDate: "2026-02-25T12:00:00"  // ISO 8601 with time
 }
 ```
 

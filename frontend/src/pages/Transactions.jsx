@@ -203,10 +203,25 @@ function AddTransactionModal({ userId, onClose, onSuccess }) {
     setError('')
 
     try {
-      await createTransaction(formData)
+      // Convert date string to LocalDateTime format (ISO 8601 with time)
+      const dateTime = formData.transactionDate + 'T12:00:00'
+      
+      // Prepare payload with correct types
+      const payload = {
+        userId: formData.userId,
+        amount: parseFloat(formData.amount),
+        type: formData.type,
+        category: formData.category,
+        description: formData.description,
+        location: formData.location,
+        transactionDate: dateTime
+      }
+      
+      await createTransaction(payload)
       onSuccess()
     } catch (err) {
-      setError('Failed to create transaction')
+      console.error('Transaction creation error:', err)
+      setError(err.response?.data?.message || 'Failed to create transaction')
     } finally {
       setLoading(false)
     }

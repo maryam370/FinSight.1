@@ -233,6 +233,23 @@ const spendingCategories = Object.entries(summary.spendingByCategory)
 spendingCategories.map(([category, amount]) => ...)
 ```
 
+### Add Transaction 400 Bad Request ✅
+**Problem**: Backend expects `LocalDateTime` (ISO 8601 with time) and numeric `amount`, but frontend sent date string and string amount.
+
+**Backend expects**:
+```java
+transactionDate: LocalDateTime  // "2026-02-25T12:00:00"
+amount: BigDecimal              // 100.50 (number)
+```
+
+**Solution**: Frontend now converts types before sending:
+```javascript
+const payload = {
+  amount: parseFloat(formData.amount),
+  transactionDate: formData.transactionDate + 'T12:00:00'
+}
+```
+
 See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for more details.
 
 ## Future Enhancements
