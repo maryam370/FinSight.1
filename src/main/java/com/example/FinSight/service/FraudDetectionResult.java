@@ -4,18 +4,19 @@ import java.util.List;
 
 import com.example.FinSight.model.RiskLevel;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-@Data
-@AllArgsConstructor
 public class FraudDetectionResult {
     private boolean fraudulent;
     private double fraudScore; // 0-100
     private RiskLevel riskLevel;
     private List<String> reasons;
     
-    // Explicit getters and setters
+    public FraudDetectionResult(boolean fraudulent, double fraudScore, RiskLevel riskLevel, List<String> reasons) {
+        this.fraudulent = fraudulent;
+        this.fraudScore = fraudScore;
+        this.riskLevel = riskLevel;
+        this.reasons = reasons;
+    }
+    
     public boolean isFraudulent() {
         return fraudulent;
     }

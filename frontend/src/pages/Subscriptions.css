@@ -1,0 +1,68 @@
+.subscriptions .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.due-soon-banner {
+  margin-bottom: 20px;
+}
+
+.due-soon-list {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.due-soon-list > div {
+  padding: 5px 0;
+}
+
+.subscriptions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.subscription-card {
+  padding: 20px;
+}
+
+.sub-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.sub-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.sub-details {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.sub-details .detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.sub-details .detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.sub-details .label {
+  font-weight: 600;
+  color: #666;
+}
+
+.sub-details .amount {
+  color: #007bff;
+  font-weight: 600;
+}

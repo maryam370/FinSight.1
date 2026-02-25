@@ -3,6 +3,8 @@ package com.example.FinSight.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,12 +17,12 @@ import com.example.FinSight.repository.FraudAlertRepository;
 import com.example.FinSight.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class FraudAlertService {
+    
+    private static final Logger log = LoggerFactory.getLogger(FraudAlertService.class);
     
     private final FraudAlertRepository fraudAlertRepository;
     private final UserRepository userRepository;
