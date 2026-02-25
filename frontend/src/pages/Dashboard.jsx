@@ -32,10 +32,14 @@ function Dashboard() {
   if (error) return <div className="alert alert-error">{error}</div>
   if (!summary) return null
 
+  // Convert Map objects to arrays for charts
+  const spendingCategories = summary.spendingByCategory ? Object.entries(summary.spendingByCategory) : []
+  const fraudCategories = summary.fraudByCategory ? Object.entries(summary.fraudByCategory) : []
+
   const spendingData = {
-    labels: summary.spendingByCategory.map(item => item.category),
+    labels: spendingCategories.map(([category]) => category),
     datasets: [{
-      data: summary.spendingByCategory.map(item => item.amount),
+      data: spendingCategories.map(([, amount]) => amount),
       backgroundColor: [
         '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
       ]
@@ -43,10 +47,10 @@ function Dashboard() {
   }
 
   const fraudData = {
-    labels: summary.fraudByCategory.map(item => item.category),
+    labels: fraudCategories.map(([category]) => category),
     datasets: [{
       label: 'Fraud Count',
-      data: summary.fraudByCategory.map(item => item.count),
+      data: fraudCategories.map(([, count]) => count),
       backgroundColor: '#dc3545'
     }]
   }
@@ -58,34 +62,34 @@ function Dashboard() {
       <div className="metrics-grid">
         <div className="metric-card">
           <h3>Total Income</h3>
-          <p className="metric-value income">${summary.totalIncome.toFixed(2)}</p>
+          <p className="metric-value income">${summary.totalIncome?.toFixed(2) || '0.00'}</p>
         </div>
         
         <div className="metric-card">
           <h3>Total Expenses</h3>
-          <p className="metric-value expense">${summary.totalExpense.toFixed(2)}</p>
+          <p className="metric-value expense">${summary.totalExpenses?.toFixed(2) || '0.00'}</p>
         </div>
         
         <div className="metric-card">
           <h3>Balance</h3>
-          <p className="metric-value balance">${summary.balance.toFixed(2)}</p>
+          <p className="metric-value balance">${summary.currentBalance?.toFixed(2) || '0.00'}</p>
         </div>
         
         <div className="metric-card">
           <h3>Flagged Transactions</h3>
-          <p className="metric-value flagged">{summary.totalFlaggedTransactions}</p>
+          <p className="metric-value flagged">{summary.totalFlaggedTransactions || 0}</p>
         </div>
         
         <div className="metric-card">
           <h3>Avg Fraud Score</h3>
-          <p className="metric-value score">{summary.averageFraudScore.toFixed(1)}</p>
+          <p className="metric-value score">{summary.averageFraudScore?.toFixed(1) || '0.0'}</p>
         </div>
       </div>
 
       <div className="charts-grid">
         <div className="chart-card">
           <h3>Spending by Category</h3>
-          {summary.spendingByCategory.length > 0 ? (
+          {spendingCategories.length > 0 ? (
             <Pie data={spendingData} />
           ) : (
             <p>No spending data</p>
@@ -94,7 +98,7 @@ function Dashboard() {
         
         <div className="chart-card">
           <h3>Fraud by Category</h3>
-          {summary.fraudByCategory.length > 0 ? (
+          {fraudCategories.length > 0 ? (
             <Bar data={fraudData} />
           ) : (
             <p>No fraud data</p>

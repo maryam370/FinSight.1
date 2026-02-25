@@ -383,19 +383,13 @@ services:
 
 ## 🐛 Troubleshooting
 
-### Common Issues
-
-**Issue**: Tests fail with database errors
-- **Solution**: Ensure H2 dependency is in classpath, check `@Transactional` on test classes
-
-**Issue**: Fraud detection not triggering
-- **Solution**: Verify user has baseline transactions for average calculation
-
-**Issue**: Demo data not generating
-- **Solution**: Check user has 0 transactions, verify DemoDataService is called
-
-**Issue**: Docker build fails
-- **Solution**: Run `mvn clean package` first, check Dockerfile paths
+See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for solutions to common issues:
+- Frontend crashes (Map vs Array issues)
+- Port conflicts
+- CORS errors
+- Docker build failures
+- Database connection issues
+- And more...
 
 ## 📄 License
 

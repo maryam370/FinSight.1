@@ -222,6 +222,19 @@ Risk levels: LOW (0-39), MEDIUM (40-69), HIGH (70-100)
 4. **Real-time**: Polling-based (not WebSocket)
 5. **Mobile**: Desktop-optimized UI
 
+## Fixed Issues
+
+### Dashboard Map vs Array Issue ✅
+**Problem**: Backend returns `Map<String, BigDecimal>` which serializes to JSON object, but frontend tried to use `.map()` array method.
+
+**Solution**: Frontend now converts objects to arrays using `Object.entries()`:
+```javascript
+const spendingCategories = Object.entries(summary.spendingByCategory)
+spendingCategories.map(([category, amount]) => ...)
+```
+
+See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for more details.
+
 ## Future Enhancements
 
 ### Short Term
