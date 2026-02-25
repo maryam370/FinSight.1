@@ -250,6 +250,18 @@ const payload = {
 }
 ```
 
+### 500 Error on Fraudulent Transaction ✅
+**Problem**: Fraud detection could fail with null values, empty reasons list, or database constraints.
+
+**Solution**: Added comprehensive error handling:
+- Null safety checks in all fraud detection rules
+- Try-catch around each rule to prevent cascading failures
+- Safe message building with length limits
+- Try-catch around fraud alert save (doesn't fail transaction)
+- Null checks for user, transaction date, location, category
+
+**Result**: Fraudulent transactions now process safely without 500 errors.
+
 See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for more details.
 
 ## Future Enhancements

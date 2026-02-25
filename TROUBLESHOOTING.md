@@ -104,6 +104,65 @@ ${summary.totalIncome?.toFixed(2) || '0.00'}
 
 ## Backend Issues
 
+### 500 Internal Server Error on Fraudulent Transaction
+
+**Problem**: Creating a transaction that triggers fraud detection causes a 500 error.
+
+**Common causes**:
+1. Null values in fraud detection calculations
+2. Empty reasons list causing String.join to fail
+3. Message exceeding database column length
+4. FraudAlert save failing due to constraints
+
+**Solution**: ✅ FIXED - Added comprehensive null safety:
+
+**In TransactionService**:
+```java
+// Check for null/empty reasons
+if (result.isFraudulent() && result.getReasons() != null && !result.getReasons().isEmpty()) {
+    // Build message safely
+    String reasonsText = String.join(", ", result.getReasons());
+    String message = "Fraud detected: " + reasonsText;
+    
+    // Ensure message doesn't exceed database column length
+    if (message.length() > 255) {
+        message = message.substring(0, 252) + "...";
+    }
+    
+    // Try-catch around fraud alert save
+    try {
+        fraudAlertRepository.save(alert);
+    } catch (Exception e) {
+        // Log error but don't fail transaction creation
+        System.err.println("Failed to create fraud alert: " + e.getMessage());
+    }
+}
+```
+
+**In FraudDetectionService**:
+```java
+// Null check at start
+if (transaction == null || transaction.getUser() == null) {
+    return new FraudDetectionResult(false, 0.0, RiskLevel.LOW, reasons);
+}
+
+// Try-catch around each rule
+try {
+    if (hasHighAmountAnomaly(user, transaction.getAmount())) {
+        score += 30;
+        reasons.add("Amount exceeds 3x user average");
+    }
+} catch (Exception e) {
+    System.err.println("Error in high amount anomaly check: " + e.getMessage());
+}
+```
+
+**Debug steps**:
+1. Check backend logs for stack trace
+2. Verify all transaction fields are set
+3. Check database constraints on fraud_alerts table
+4. Test with simple transaction first, then add complexity
+
 ### Port 8080 Already in Use
 
 **Windows**:

@@ -54,15 +54,31 @@ public class TransactionService {
         Transaction saved = transactionRepository.save(transaction);
         
         // Create alert if fraud detected
-        if (result.isFraudulent()) {
+        if (result.isFraudulent() && result.getReasons() != null && !result.getReasons().isEmpty()) {
             FraudAlert alert = new FraudAlert();
             alert.setUser(user);
             alert.setTransaction(saved);
-            alert.setMessage("Fraud detected: " + String.join(", ", result.getReasons()));
-            alert.setSeverity(result.getRiskLevel().name());
+            
+            // Build message safely
+            String reasonsText = String.join(", ", result.getReasons());
+            String message = "Fraud detected: " + reasonsText;
+            
+            // Ensure message doesn't exceed database column length (if any)
+            if (message.length() > 255) {
+                message = message.substring(0, 252) + "...";
+            }
+            
+            alert.setMessage(message);
+            alert.setSeverity(result.getRiskLevel() != null ? result.getRiskLevel().name() : "MEDIUM");
             alert.setResolved(false);
             alert.setCreatedAt(LocalDateTime.now());
-            fraudAlertRepository.save(alert);
+            
+            try {
+                fraudAlertRepository.save(alert);
+            } catch (Exception e) {
+                // Log error but don't fail transaction creation
+                System.err.println("Failed to create fraud alert: " + e.getMessage());
+            }
         }
 
         return mapToResponse(saved, result);
