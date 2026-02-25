@@ -31,8 +31,43 @@ public class TransactionController {
     private final TransactionService transactionService;
     
     @PostMapping
-    public ResponseEntity<TransactionResponse> createTransaction(@RequestBody TransactionRequest request) {
-        return new ResponseEntity<>(transactionService.createTransaction(request), HttpStatus.CREATED);
+    public ResponseEntity<?> createTransaction(@RequestBody TransactionRequest request) {
+        try {
+            TransactionResponse response = transactionService.createTransaction(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (RuntimeException e) {
+            // Log the error
+            System.err.println("Error creating transaction: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Return appropriate error response
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse("Failed to create transaction: " + e.getMessage()));
+        } catch (Exception e) {
+            // Log unexpected errors
+            System.err.println("Unexpected error creating transaction: " + e.getMessage());
+            e.printStackTrace();
+            
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("An unexpected error occurred"));
+        }
+    }
+    
+    // Simple error response class
+    private static class ErrorResponse {
+        private String message;
+        
+        public ErrorResponse(String message) {
+            this.message = message;
+        }
+        
+        public String getMessage() {
+            return message;
+        }
+        
+        public void setMessage(String message) {
+            this.message = message;
+        }
     }
     
     @GetMapping("/user/{userId}")

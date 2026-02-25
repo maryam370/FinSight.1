@@ -305,19 +305,43 @@ public class DashboardController {
 
 ### 400 Bad Request / 422 Unprocessable Entity
 
-**Problem**: Request payload doesn't match backend expectations.
+**Problem**: Request payload doesn't match backend expectations, OR transaction saves successfully but returns wrong status code.
 
 **Common causes**:
 1. Wrong data types (string instead of number)
 2. Missing required fields
 3. Wrong date format
 4. Invalid enum values
+5. Exception thrown after successful save
+6. Missing error handling in controller
 
 **Debug steps**:
 1. Check browser Network tab → Request Payload
 2. Compare with backend DTO requirements
 3. Check backend logs for validation errors
 4. Verify field names match exactly (case-sensitive)
+5. Check if transaction was actually saved in database (H2 console)
+
+**Solution**: ✅ FIXED - Added proper error handling in controller:
+```java
+@PostMapping
+public ResponseEntity<?> createTransaction(@RequestBody TransactionRequest request) {
+    try {
+        TransactionResponse response = transactionService.createTransaction(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    } catch (RuntimeException e) {
+        System.err.println("Error creating transaction: " + e.getMessage());
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(new ErrorResponse("Failed to create transaction: " + e.getMessage()));
+    } catch (Exception e) {
+        System.err.println("Unexpected error: " + e.getMessage());
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(new ErrorResponse("An unexpected error occurred"));
+    }
+}
+```
 
 **Example - Transaction creation**:
 ```javascript
@@ -333,6 +357,12 @@ public class DashboardController {
   transactionDate: "2026-02-25T12:00:00"  // ISO 8601 with time
 }
 ```
+
+**If transaction saves but returns 422**:
+1. Check backend logs for exceptions after save
+2. Verify response DTO can be serialized
+3. Check for validation errors in response mapping
+4. Ensure no exceptions in fraud detection after save
 
 ## Data Issues
 

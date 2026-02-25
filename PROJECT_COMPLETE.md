@@ -262,6 +262,18 @@ const payload = {
 
 **Result**: Fraudulent transactions now process safely without 500 errors.
 
+### 422 Error Despite Successful Save ✅
+**Problem**: Transaction saves successfully in database but frontend receives 422 error.
+
+**Solution**: Added proper error handling in TransactionController:
+- Try-catch around service call
+- Returns 201 CREATED on success
+- Returns 400 BAD_REQUEST on RuntimeException
+- Returns 500 INTERNAL_SERVER_ERROR on unexpected exceptions
+- Logs all errors with stack traces for debugging
+
+**Result**: Correct HTTP status codes returned based on actual operation result.
+
 See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for more details.
 
 ## Future Enhancements
